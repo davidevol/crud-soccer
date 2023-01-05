@@ -3,21 +3,44 @@ const express = require('express');
 
 const app = express();
 
-const stadiums = JSON.parse(
-fs.readFileSync(`${__dirname}/dev-data/data/stadiums-simple.json`));
+app.use(express.json()); // middleware
 
-app.get('/api/v1/stadiums', (req, res) =>{
-    res.status(200).json({
+const stadiums = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/stadiums-simple.json`)
+);
+
+app.get('/api/v1/stadiums', (req, res) => {
+  res.status(200).json({
+    status: 'sucess',
+    length: stadiums.length,
+    data: {
+      stadiums,
+    },
+  });
+});
+
+app.post('/api/v1/stadiums', (req, res) => {
+  const newId = stadiums[stadiums.length - 1].id + 1; // fazendo de forma manual pela inexistencia de banco de dados!
+  const newStad = Object.assign({ id: newId }, req.body);
+
+  stadiums.push(newStad);
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/stadiums-simple.json`,
+    JSON.stringify(stadiums),
+    (err) => {
+      res.status(201).json({
         status: 'sucess',
-        length: stadiums.length,
         data: {
-            stadiums
-        }
-    });
+          stadium: newStad,
+        },
+      });
+    }
+  );
 });
 
 // listen
 const port = 3000;
 app.listen(port, () => {
-    console.log(`App is running on port ${port}...`);
+  console.log(`App is running on port ${port}...`);
 });

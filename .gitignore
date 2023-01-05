@@ -1,3 +1,5 @@
 .dccache
 node_modules
+
 img/
+dev-data/
