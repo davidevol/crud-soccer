@@ -20,25 +20,25 @@ app.get('/api/v1/stadiums', (req, res) => {
 });
 
 app.get('/api/v1/stadiums/:id', (req, res) => {
-    console.log(req.params)
-    const id = parseInt(req.params.id);
-    const stadium = stadiums.find(el => el.id === id);
+  console.log(req.params);
+  const id = parseInt(req.params.id);
+  const stadium = stadiums.find((el) => el.id === id);
 
-    if (!stadium){
-        return res.status(404).json({
-            status: 'fail',
-            message: 'Invalid ID'
-        })
-    }
-
-    res.status(200).json({
-      status: 'sucess',
-      length: stadiums.length,
-      data: {
-        stadium
-      },
+  if (!stadium) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
     });
+  }
+
+  res.status(200).json({
+    status: 'sucess',
+    length: stadiums.length,
+    data: {
+      stadium,
+    },
   });
+});
 
 app.post('/api/v1/stadiums', (req, res) => {
   const newId = stadiums[stadiums.length - 1].id + 1; // fazendo de forma manual pela inexistencia de banco de dados!
@@ -54,6 +54,33 @@ app.post('/api/v1/stadiums', (req, res) => {
         status: 'sucess',
         data: {
           stadium: newStad,
+        },
+      });
+    }
+  );
+});
+
+app.delete('/api/v1/stadiums/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const stadium = stadiums.find((el) => el.id === id);
+
+  if (!stadium) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  stadiums.splice(id, 1);
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/stadiums-simple.json`,
+    JSON.stringify(stadiums),
+    (err) => {
+      return res.status(204).json({
+        status: 'sucess',
+        data: {
+          data: null,
         },
       });
     }
