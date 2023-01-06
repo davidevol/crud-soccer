@@ -9,7 +9,7 @@ const stadiums = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/stadiums-simple.json`)
 );
 
-app.get('/api/v1/stadiums', (req, res) => {
+const getAllStadiums = (req, res) => {
   res.status(200).json({
     status: 'sucess',
     length: stadiums.length,
@@ -17,9 +17,9 @@ app.get('/api/v1/stadiums', (req, res) => {
       stadiums,
     },
   });
-});
+}
 
-app.get('/api/v1/stadiums/:id', (req, res) => {
+const getStadium =  (req, res) => {
   console.log(req.params);
   const id = parseInt(req.params.id);
   const stadium = stadiums.find((el) => el.id === id);
@@ -38,9 +38,9 @@ app.get('/api/v1/stadiums/:id', (req, res) => {
       stadium,
     },
   });
-});
+}
 
-app.post('/api/v1/stadiums', (req, res) => {
+const addStadium = (req, res) => {
   const newId = stadiums[stadiums.length - 1].id + 1; // fazendo de forma manual pela inexistencia de banco de dados!
   const newStad = Object.assign({ id: newId }, req.body);
 
@@ -58,9 +58,9 @@ app.post('/api/v1/stadiums', (req, res) => {
       });
     }
   );
-});
+}
 
-app.delete('/api/v1/stadiums/:id', (req, res) => {
+const deleteStadium = (req, res) => {
   const id = parseInt(req.params.id);
   const stadium = stadiums.find((el) => el.id === id);
 
@@ -85,9 +85,9 @@ app.delete('/api/v1/stadiums/:id', (req, res) => {
       });
     }
   );
-});
+}
 
-app.patch('/api/v1/stadiums/:id', (req, res) => {
+const changeStadium =  (req, res) => {
   const id = parseInt(req.params.id);
   const stadium = stadiums.findIndex((el) => el.id === id);
 
@@ -114,7 +114,18 @@ app.patch('/api/v1/stadiums/:id', (req, res) => {
       res.status(200).json(newStad);
     }
   );
-});
+}
+
+app
+  .route('/api/v1/stadiums')
+  .get(getAllStadiums)
+  .post(addStadium);
+
+app
+  .route('/api/v1/stadiums/:id')
+  .get(getStadium)
+  .delete(deleteStadium)
+  .patch(changeStadium)
 
 // listen
 const port = 3000;
