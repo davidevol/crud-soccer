@@ -77,12 +77,41 @@ app.delete('/api/v1/stadiums/:id', (req, res) => {
     `${__dirname}/dev-data/data/stadiums-simple.json`,
     JSON.stringify(stadiums),
     (err) => {
-      return res.status(204).json({
+      return res.status(200).json({
         status: 'sucess',
         data: {
           data: null,
         },
       });
+    }
+  );
+});
+
+app.patch('/api/v1/stadiums/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const stadium = stadiums.findIndex((el) => el.id === id);
+
+  if (stadium.id == stadiums.find((el) => el.id === id)) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'this ID does not exist',
+    });
+  }
+
+  const newStad = Object.assign({ id }, req.body);
+  stadiums[stadium] = newStad;
+
+  fs.writeFile(
+    `${__dirname}/dev-data/data/stadiums-simple.json`,
+    JSON.stringify(stadiums),
+    (err) => {
+      res.status(200).json({
+        status: 'sucess',
+        data: {
+          stadium: newStad,
+        },
+      });
+      res.status(200).json(newStad);
     }
   );
 });
