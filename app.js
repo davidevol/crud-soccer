@@ -1,13 +1,18 @@
 const fs = require('fs');
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
 
-app.use(express.json()); // middleware
+// middleware
 
+app.use(morgan('dev'));
+app.use(express.json());
 const stadiums = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/stadiums-simple.json`)
 );
+
+// route handlers
 
 const getAllStadiums = (req, res) => {
   res.status(200).json({
@@ -17,9 +22,9 @@ const getAllStadiums = (req, res) => {
       stadiums,
     },
   });
-}
+};
 
-const getStadium =  (req, res) => {
+const getStadium = (req, res) => {
   console.log(req.params);
   const id = parseInt(req.params.id);
   const stadium = stadiums.find((el) => el.id === id);
@@ -38,7 +43,7 @@ const getStadium =  (req, res) => {
       stadium,
     },
   });
-}
+};
 
 const addStadium = (req, res) => {
   const newId = stadiums[stadiums.length - 1].id + 1; // fazendo de forma manual pela inexistencia de banco de dados!
@@ -58,7 +63,7 @@ const addStadium = (req, res) => {
       });
     }
   );
-}
+};
 
 const deleteStadium = (req, res) => {
   const id = parseInt(req.params.id);
@@ -85,9 +90,9 @@ const deleteStadium = (req, res) => {
       });
     }
   );
-}
+};
 
-const changeStadium =  (req, res) => {
+const changeStadium = (req, res) => {
   const id = parseInt(req.params.id);
   const stadium = stadiums.findIndex((el) => el.id === id);
 
@@ -114,20 +119,20 @@ const changeStadium =  (req, res) => {
       res.status(200).json(newStad);
     }
   );
-}
+};
 
-app
-  .route('/api/v1/stadiums')
-  .get(getAllStadiums)
-  .post(addStadium);
+// routes
+
+app.route('/api/v1/stadiums').get(getAllStadiums).post(addStadium);
 
 app
   .route('/api/v1/stadiums/:id')
   .get(getStadium)
   .delete(deleteStadium)
-  .patch(changeStadium)
+  .patch(changeStadium);
 
-// listen
+// start server
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`App is running on port ${port}...`);
