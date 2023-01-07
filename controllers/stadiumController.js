@@ -4,6 +4,53 @@ const stadiums = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/stadiums-simple.json`)
 );
 
+
+
+exports.checkID = (req, res, next, val) => {
+  console.log(`Stadium id is: ${val}`);
+  
+  const id = parseInt(req.params.id);
+  const stadium = stadiums.find((el) => el.id === id);
+
+  if (!stadium) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+  next();
+}
+
+exports.changeStadium = (req, res) => {
+  const id = parseInt(req.params.id);
+  const stadium = stadiums.findIndex((el) => el.id === id);
+
+  if (stadium.id == stadiums.find((el) => el.id === id)) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'this ID does not exist',
+    });
+  } 
+
+  const newStad = Object.assign({ id }, req.body);
+  stadiums[stadium] = newStad;
+
+  fs.writeFile(
+    `${__dirname}/../dev-data/data/stadiums-simple.json`,
+    JSON.stringify(stadiums),
+    (err) => {
+      res.status(200).json({
+        status: 'sucess',
+        data: {
+          stadium: newStad,
+        },
+      });
+      res.status(200).json(newStad);
+    }
+  );
+  next();
+};
+
 exports.getAllStadiums = (req, res) => {
   res.status(200).json({
     status: 'sucess',
@@ -42,7 +89,7 @@ exports.addStadium = (req, res) => {
   stadiums.push(newStad);
 
   fs.writeFile(
-    `${__dirname}/dev-data/data/stadiums-simple.json`,
+    `${__dirname}/../dev-data/data/stadiums-simple.json`,
     JSON.stringify(stadiums),
     (err) => {
       res.status(201).json({
@@ -82,31 +129,3 @@ exports.deleteStadium = (req, res) => {
   );
 };
 
-exports.changeStadium = (req, res) => {
-  const id = parseInt(req.params.id);
-  const stadium = stadiums.findIndex((el) => el.id === id);
-
-  if (stadium.id == stadiums.find((el) => el.id === id)) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'this ID does not exist',
-    });
-  }
-
-  const newStad = Object.assign({ id }, req.body);
-  stadiums[stadium] = newStad;
-
-  fs.writeFile(
-    `${__dirname}/dev-data/data/stadiums-simple.json`,
-    JSON.stringify(stadiums),
-    (err) => {
-      res.status(200).json({
-        status: 'sucess',
-        data: {
-          stadium: newStad,
-        },
-      });
-      res.status(200).json(newStad);
-    }
-  );
-};
