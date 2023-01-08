@@ -3,9 +3,12 @@ const stadControl = require('./../controllers/stadiumController');
 
 const router = express.Router();
 
-router.param('id', stadControl.IdIsOutOfBounds);
+router.param('id', stadControl.IsIdOutOfBounds);
 
-router.route('/').get(stadControl.getAllStadiums).post(stadControl.addStadium);
+router
+  .route('/')
+  .get(stadControl.getAllStadiums)
+  .post(stadControl.IsBodyOkay, stadControl.addStadium);
 
 router
   .route('/:id')

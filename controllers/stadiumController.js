@@ -4,7 +4,16 @@ const sourceDirectory = `${__dirname}/../dev-data/data/stadiums-simple.json`;
 
 const stadiums = JSON.parse(fs.readFileSync(sourceDirectory));
 
-exports.IdIsOutOfBounds = (req, res, next, val) => {
+exports.IsBodyOkay = (req, res, next) => {
+  if (!(req.body.name && req.body.difficulty))
+    return res.status(400).json({
+      status: 'fail',
+      message: 'missing name or difficulty',
+    });
+  next();
+};
+
+exports.IsIdOutOfBounds = (req, res, next, val) => {
   console.log(`Stadium id is: ${val}`);
 
   if (parseInt(req.params.id) > stadiums.length - 1)
