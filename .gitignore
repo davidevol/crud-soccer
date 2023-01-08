@@ -1,7 +1,3 @@
 .dccache
 node_modules
-
-img/
-dev-data/
-
-*.json
+stadiums-simple.json
