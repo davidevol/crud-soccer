@@ -1,53 +1,17 @@
 const fs = require('fs');
 
-const stadiums = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/stadiums-simple.json`)
-);
+const sourceDirectory = `${__dirname}/../dev-data/data/stadiums-simple.json`;
 
+const stadiums = JSON.parse(fs.readFileSync(sourceDirectory));
 
-
-exports.checkID = (req, res, next, val) => {
+exports.IdIsOutOfBounds = (req, res, next, val) => {
   console.log(`Stadium id is: ${val}`);
-  
-  const id = parseInt(req.params.id);
-  const stadium = stadiums.find((el) => el.id === id);
 
-  if (!stadium) {
+  if (parseInt(req.params.id) > stadiums.length - 1)
     return res.status(404).json({
       status: 'fail',
-      message: 'Invalid ID',
+      message: 'this id does not exist',
     });
-  }
-  next();
-}
-
-exports.changeStadium = (req, res) => {
-  const id = parseInt(req.params.id);
-  const stadium = stadiums.findIndex((el) => el.id === id);
-
-  if (stadium.id == stadiums.find((el) => el.id === id)) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'this ID does not exist',
-    });
-  } 
-
-  const newStad = Object.assign({ id }, req.body);
-  stadiums[stadium] = newStad;
-
-  fs.writeFile(
-    `${__dirname}/../dev-data/data/stadiums-simple.json`,
-    JSON.stringify(stadiums),
-    (err) => {
-      res.status(200).json({
-        status: 'sucess',
-        data: {
-          stadium: newStad,
-        },
-      });
-      res.status(200).json(newStad);
-    }
-  );
   next();
 };
 
@@ -66,13 +30,6 @@ exports.getStadium = (req, res) => {
   const id = parseInt(req.params.id);
   const stadium = stadiums.find((el) => el.id === id);
 
-  if (!stadium) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   res.status(200).json({
     status: 'sucess',
     length: stadiums.length,
@@ -88,44 +45,45 @@ exports.addStadium = (req, res) => {
 
   stadiums.push(newStad);
 
-  fs.writeFile(
-    `${__dirname}/../dev-data/data/stadiums-simple.json`,
-    JSON.stringify(stadiums),
-    (err) => {
-      res.status(201).json({
-        status: 'sucess',
-        data: {
-          stadium: newStad,
-        },
-      });
-    }
-  );
+  fs.writeFile(sourceDirectory, JSON.stringify(stadiums), (err) => {
+    res.status(201).json({
+      status: 'sucess',
+      data: {
+        stadium: newStad,
+      },
+    });
+  });
 };
 
 exports.deleteStadium = (req, res) => {
   const id = parseInt(req.params.id);
   const stadium = stadiums.find((el) => el.id === id);
 
-  if (!stadium) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   stadiums.splice(id, 1);
 
-  fs.writeFile(
-    `${__dirname}/dev-data/data/stadiums-simple.json`,
-    JSON.stringify(stadiums),
-    (err) => {
-      return res.status(200).json({
-        status: 'sucess',
-        data: {
-          data: null,
-        },
-      });
-    }
-  );
+  fs.writeFile(sourceDirectory, JSON.stringify(stadiums), (err) => {
+    return res.status(200).json({
+      status: 'sucess',
+      data: {
+        data: null,
+      },
+    });
+  });
 };
 
+exports.changeStadium = (req, res) => {
+  const id = parseInt(req.params.id);
+  const stadium = stadiums.findIndex((el) => el.id === id);
+
+  const newStad = Object.assign({ id }, req.body);
+  stadiums[stadium] = newStad;
+
+  fs.writeFile(sourceDirectory, JSON.stringify(stadiums), (err) => {
+    res.status(200).json({
+      status: 'sucess',
+      data: {
+        stadium: newStad,
+      },
+    });
+  });
+};
