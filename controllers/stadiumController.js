@@ -13,10 +13,12 @@ exports.IsBodyOkay = (req, res, next) => {
   next();
 };
 
-exports.IsIdOutOfBounds = (req, res, next, val) => {
+exports.IdCheck = (req, res, next, val) => {
   console.log(`Stadium id is: ${val}`);
+  const id = parseInt(req.params.id);
+  const stadium = stadiums.find((el) => el.id === id);
 
-  if (parseInt(req.params.id) > stadiums.length - 1)
+  if ( id > stadiums.length - 1 || !stadium)
     return res.status(404).json({
       status: 'fail',
       message: 'this id does not exist',

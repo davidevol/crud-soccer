@@ -3,7 +3,7 @@ const stadControl = require('./../controllers/stadiumController');
 
 const router = express.Router();
 
-router.param('id', stadControl.IsIdOutOfBounds);
+router.param('id', stadControl.IdCheck);
 
 router
   .route('/')
