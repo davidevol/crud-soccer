@@ -13,7 +13,7 @@ exports.IsBodyOkay = (req, res, next) => {
   next();
 };
 
-exports.IdCheck = (req, res, next, val) => {
+exports.IdCheck = (req, res, next) => {
   const id = parseInt(req.params.id);
   const stadium = stadiums.find((el) => el.id === id);
 

@@ -1,19 +1,19 @@
-const express = require('express');
-const stadControl = require('./../controllers/stadiumController');
+const express = require("express");
+const stadiumController = require("./../controllers/stadiumController");
 
 const router = express.Router();
 
-router.param('id', stadControl.IdCheck);
+router.param("id", stadiumController.IdCheck);
 
 router
-  .route('/')
-  .get(stadControl.getAllStadiums)
-  .post(stadControl.IsBodyOkay, stadControl.addStadium);
+  .route("/")
+  .get(stadiumController.getAllStadiums)
+  .post(stadiumController.IsBodyOkay, stadiumController.addStadium);
 
 router
-  .route('/:id')
-  .get(stadControl.getStadium)
-  .delete(stadControl.deleteStadium)
-  .patch(stadControl.changeStadium);
+  .route("/:id")
+  .get(stadiumController.getStadium)
+  .delete(stadiumController.deleteStadium)
+  .patch(stadiumController.changeStadium);
 
 module.exports = router;
