@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require('fs');
 
 const sourceDirectory = `${__dirname}/../dev-data/data/stadiums-simple.json`;
 
@@ -7,27 +7,28 @@ const stadiums = JSON.parse(fs.readFileSync(sourceDirectory));
 exports.IsBodyOkay = (req, res, next) => {
   if (!(req.body.name && req.body.difficulty))
     return res.status(400).json({
-      status: "fail",
-      message: "missing name or difficulty",
+      status: 'fail',
+      message: 'missing name or difficulty',
     });
   next();
 };
 
 exports.IdCheck = (req, res, next, val) => {
+  console.log(`Stadium id is: ${val}`);
   const id = parseInt(req.params.id);
   const stadium = stadiums.find((el) => el.id === id);
 
-  if (id > stadiums.length - 1 || !stadium)
+  if ( id > stadiums.length - 1 || !stadium)
     return res.status(404).json({
-      status: "fail",
-      message: "this id does not exist",
+      status: 'fail',
+      message: 'this id does not exist',
     });
   next();
 };
 
 exports.getAllStadiums = (req, res) => {
   res.status(200).json({
-    status: "sucess",
+    status: 'sucess',
     length: stadiums.length,
     data: {
       stadiums,
@@ -36,11 +37,12 @@ exports.getAllStadiums = (req, res) => {
 };
 
 exports.getStadium = (req, res) => {
+  console.log(req.params);
   const id = parseInt(req.params.id);
   const stadium = stadiums.find((el) => el.id === id);
 
   res.status(200).json({
-    status: "sucess",
+    status: 'sucess',
     length: stadiums.length,
     data: {
       stadium,
@@ -56,7 +58,7 @@ exports.addStadium = (req, res) => {
 
   fs.writeFile(sourceDirectory, JSON.stringify(stadiums), (err) => {
     res.status(201).json({
-      status: "sucess",
+      status: 'sucess',
       data: {
         stadium: newStad,
       },
@@ -66,11 +68,17 @@ exports.addStadium = (req, res) => {
 
 exports.deleteStadium = (req, res) => {
   const id = parseInt(req.params.id);
+  const stadium = stadiums.find((el) => el.id === id);
 
   stadiums.splice(id, 1);
 
   fs.writeFile(sourceDirectory, JSON.stringify(stadiums), (err) => {
-    return res.status(204).end();
+    return res.status(200).json({
+      status: 'sucess',
+      data: {
+        data: null,
+      },
+    });
   });
 };
 
@@ -83,7 +91,7 @@ exports.changeStadium = (req, res) => {
 
   fs.writeFile(sourceDirectory, JSON.stringify(stadiums), (err) => {
     res.status(200).json({
-      status: "sucess",
+      status: 'sucess',
       data: {
         stadium: newStad,
       },
