@@ -1,38 +1,21 @@
 const Stadium = require("./../models/stadiumModel");
 
-const sourceDirectory = `${__dirname}/../dev-data/data/stadiums-simple.json`;
-
-const stadiums = JSON.parse(fs.readFileSync(sourceDirectory));
-
-exports.IsBodyOkay = (req, res, next) => {
-  if (!(req.body.name && req.body.difficulty))
-    return res.status(400).json({
-      status: "fail",
-      message: "missing name or difficulty",
+exports.getAllStadiums = async (req, res) => {
+  try {
+    const stadiums = await Stadium.find();
+    res.status(200).json({
+      status: "sucess",
+      length: stadiums.length,
+      data: {
+        stadiums,
+      },
     });
-  next();
-};
-
-exports.IdCheck = (req, res, next) => {
-  const id = parseInt(req.params.id);
-  const stadium = stadiums.find((el) => el.id === id);
-
-  if (id > stadiums.length - 1 || !stadium)
-    return res.status(404).json({
+  } catch (err) {
+    res.status(404).json({
       status: "fail",
-      message: "this id does not exist",
+      message: err,
     });
-  next();
-};
-
-exports.getAllStadiums = (req, res) => {
-  res.status(200).json({
-    status: "sucess",
-    length: stadiums.length,
-    data: {
-      stadiums,
-    },
-  });
+  }
 };
 
 exports.getStadium = (req, res) => {
