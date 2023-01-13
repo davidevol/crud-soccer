@@ -8,7 +8,7 @@ router.param("id", stadiumController.IdCheck);
 router
   .route("/")
   .get(stadiumController.getAllStadiums)
-  .post(stadiumController.IsBodyOkay, stadiumController.addStadium);
+  .post(stadiumController.addStadium);
 
 router
   .route("/:id")

@@ -1,4 +1,4 @@
-const fs = require("fs");
+const Stadium = require("./../models/stadiumModel");
 
 const sourceDirectory = `${__dirname}/../dev-data/data/stadiums-simple.json`;
 
