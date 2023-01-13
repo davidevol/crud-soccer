@@ -66,19 +66,23 @@ exports.deleteStadium = async (req, res) => {
   }
 };
 
-exports.changeStadium = (req, res) => {
-  const id = parseInt(req.params.id);
-  const stadium = stadiums.findIndex((el) => el.id === id);
+exports.changeStadium = async (req, res) => {
+  try {
+    const stadium = await Stadium.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
 
-  const newStad = Object.assign({ id }, req.body);
-  stadiums[stadium] = newStad;
-
-  fs.writeFile(sourceDirectory, JSON.stringify(stadiums), (err) => {
     res.status(200).json({
       status: "sucess",
       data: {
-        stadium: newStad,
+        stadium,
       },
     });
-  });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err,
+    });
+  }
 };
