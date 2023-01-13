@@ -23,7 +23,6 @@ exports.getStadium = async (req, res) => {
     const stadium = await Stadium.findById(req.params.id);
     res.status(200).json({
       status: "sucess",
-    length: stadiums.length,
       data: {
         stadium,
       },
@@ -36,20 +35,22 @@ exports.getStadium = async (req, res) => {
   }
 };
 
-exports.addStadium = (req, res) => {
-  const newId = stadiums[stadiums.length - 1].id + 1; // fazendo de forma manual pela inexistencia de banco de dados!
-  const newStad = Object.assign({ id: newId }, req.body);
+exports.addStadium = async (req, res) => {
+  try {
+    const newStadium = await Stadium.create(req.body);
 
-  stadiums.push(newStad);
-
-  fs.writeFile(sourceDirectory, JSON.stringify(stadiums), (err) => {
     res.status(201).json({
       status: "sucess",
       data: {
-        stadium: newStad,
+        stadium: newStadium,
       },
     });
-  });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err,
+    });
+  }
 };
 
 exports.deleteStadium = (req, res) => {
