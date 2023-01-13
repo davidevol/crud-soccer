@@ -3,8 +3,6 @@ const stadiumController = require("./../controllers/stadiumController");
 
 const router = express.Router();
 
-router.param("id", stadiumController.IdCheck);
-
 router
   .route("/")
   .get(stadiumController.getAllStadiums)
