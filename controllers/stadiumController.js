@@ -53,14 +53,17 @@ exports.addStadium = async (req, res) => {
   }
 };
 
-exports.deleteStadium = (req, res) => {
-  const id = parseInt(req.params.id);
+exports.deleteStadium = async (req, res) => {
+  try {
+    const stadium = await Stadium.findByIdAndDelete(req.params.id);
 
-  stadiums.splice(id, 1);
-
-  fs.writeFile(sourceDirectory, JSON.stringify(stadiums), (err) => {
-    return res.status(204).end();
-  });
+    res.status(204).end();
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err,
+    });
+  }
 };
 
 exports.changeStadium = (req, res) => {
