@@ -7,7 +7,8 @@ router
   .route("/top-5-cheap")
   .get(stadiumController.aliasTopCheap, stadiumController.getAllStadiums);
 
-router.route("/stadium-stats").get(stadiumController.getStadiumStats)
+router.route("/stadium-stats").get(stadiumController.getStadiumStats);
+router.route("/monthly-plan/:year").get(stadiumController.getMonthlyPlan);
 
 router
   .route("/")
