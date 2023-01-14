@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 const stadiumSchema = new mongoose.Schema(
   {
@@ -84,7 +85,12 @@ const stadiumSchema = new mongoose.Schema(
 
 stadiumSchema.virtual("durationWeeks").get(function () {
   const weeks = (this.duration / 7).toPrecision(2);
-  return weeks
+  return weeks;
+});
+
+stadiumSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
 });
 
 const Stadium = mongoose.model("StadiumDB", stadiumSchema);
