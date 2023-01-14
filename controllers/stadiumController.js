@@ -1,5 +1,5 @@
 const Stadium = require("./../models/stadiumModel");
-const APIFeatures = require('./../utils/apiFeatures');
+const APIFeatures = require("./../utils/apiFeatures");
 
 exports.aliasTopCheap = (req, res, next) => {
   try {
@@ -98,6 +98,42 @@ exports.changeStadium = async (req, res) => {
       status: "sucess",
       data: {
         stadium,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err,
+    });
+  }
+};
+
+exports.getStadiumStats = async (req, res) => {
+  try {
+    const stats = await Stadium.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: { $toUpper: "$difficulty" },
+          numTours: { $sum: 1 },
+          numRatings: { $sum: "$ratingsQuantity" },
+          avgRating: { $avg: "$ratingsAverage" },
+          avgPrice: { $avg: "$price" },
+          minPrice: { $min: "$price" },
+          maxPrice: { $max: "$price" },
+        },
+      },
+      {
+        $sort: { avgPrice: 1 },
+      },
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        stats,
       },
     });
   } catch (err) {
