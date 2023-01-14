@@ -1,5 +1,19 @@
 const Stadium = require("./../models/stadiumModel");
 
+exports.aliasTopCheap = (req, res, next) => {
+  try {
+    req.query.limit = "5";
+    req.query.sort = "-ratingsAverage,price";
+    req.query.fields = "name,price,ratingsAverage,summary,difficulty";
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err,
+    });
+  }
+  next();
+};
+
 exports.getAllStadiums = async (req, res) => {
   try {
     const queryObject = { ...req.query };

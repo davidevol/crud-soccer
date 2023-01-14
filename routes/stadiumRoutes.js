@@ -3,6 +3,8 @@ const stadiumController = require("./../controllers/stadiumController");
 
 const router = express.Router();
 
+router.route('/top-5-cheap').get(stadiumController.aliasTopCheap, stadiumController.getAllStadiums);
+
 router
   .route("/")
   .get(stadiumController.getAllStadiums)
