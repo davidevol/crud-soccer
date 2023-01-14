@@ -2,6 +2,8 @@ const express = require("express");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 
+const AppError = require("./utils/appError");
+const globalErrorHandler = require("./controllers/errorController")
 const stadiumRouter = require("./routes/stadiumRoutes");
 
 const app = express();
@@ -23,11 +25,9 @@ app.use(express.static(`${__dirname}/public`));
 app.use("/api/v1/stadiums", stadiumRouter);
 
 app.all("*", (req, res, next) => {
-  res.status(404).json({
-    status: "fail",
-    message: `Cant find ${req.originalUrl} on this server!`,
-  });
-  next();
+  next(new AppError(`Cant find ${req.originalUrl} on this server!`, 404));
 });
+
+app.use(globalErrorHandler)
 
 module.exports = app;
