@@ -2,7 +2,50 @@ const Stadium = require("./../models/stadiumModel");
 
 exports.getAllStadiums = async (req, res) => {
   try {
-    const stadiums = await Stadium.find();
+    const queryObject = { ...req.query };
+    const excludedQueryFields = ["page", "sort", "limit", "fields"];
+    excludedQueryFields.forEach((el) => delete queryObject[el]);
+
+    // enable regular symbols to filtering
+    let queryString = JSON.stringify(queryObject);
+    queryString = queryString.replace(
+      /\b(gte|gt|lte|lt)\b/g,
+      (match) => `$${match}`
+    );
+
+    let query = Stadium.find(JSON.parse(queryString));
+
+    //sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt");
+    }
+
+    //fields
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v");
+    }
+
+    //pages
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numberStadiums = await Stadium.countDocuments();
+      if (skip >= numberStadiums) throw new Error("This page does not exist");
+    }
+
+    // Execute the query
+    const stadiums = await query; // query.sort().select().skip().limit()
+
     res.status(200).json({
       status: "sucess",
       length: stadiums.length,
