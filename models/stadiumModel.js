@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+const validator = require("validator");
 
 const stadiumSchema = new mongoose.Schema(
   {
@@ -10,7 +11,10 @@ const stadiumSchema = new mongoose.Schema(
       trim: true,
       maxlength: [40, "A tour name must have less or equal then 40 characters"],
       minlength: [10, "A tour name must have more or equal then 10 characters"],
-      // validate: [validator.isAlpha, 'Stadium name must only contain characters']
+      validate: [
+        validator.isAlpha,
+        "Stadium name must only contain characters",
+      ],
     },
     slug: String,
     duration: {
@@ -88,20 +92,25 @@ stadiumSchema.virtual("durationWeeks").get(function () {
   return weeks;
 });
 
-stadiumSchema.pre(/^find/, function(next) {
+stadiumSchema.pre('save', function(next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+stadiumSchema.pre(/^find/, function (next) {
   this.find({ secretStadium: { $ne: true } });
 
   this.start = Date.now();
   next();
 });
 
-stadiumSchema.post(/^find/, function(docs, next) {
+stadiumSchema.post(/^find/, function (docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
   next();
 });
 
 // AGGREGATION MIDDLEWARE
-stadiumSchema.pre('aggregate', function(next) {
+stadiumSchema.pre("aggregate", function (next) {
   this.pipeline().unshift({ $match: { secretStadium: { $ne: true } } });
 
   console.log(this.pipeline());
