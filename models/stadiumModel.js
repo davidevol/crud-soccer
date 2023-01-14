@@ -88,8 +88,23 @@ stadiumSchema.virtual("durationWeeks").get(function () {
   return weeks;
 });
 
-stadiumSchema.pre("save", function (next) {
-  this.slug = slugify(this.name, { lower: true });
+stadiumSchema.pre(/^find/, function(next) {
+  this.find({ secretStadium: { $ne: true } });
+
+  this.start = Date.now();
+  next();
+});
+
+stadiumSchema.post(/^find/, function(docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds!`);
+  next();
+});
+
+// AGGREGATION MIDDLEWARE
+stadiumSchema.pre('aggregate', function(next) {
+  this.pipeline().unshift({ $match: { secretStadium: { $ne: true } } });
+
+  console.log(this.pipeline());
   next();
 });
 
