@@ -22,4 +22,12 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use("/api/v1/stadiums", stadiumRouter);
 
+app.all("*", (req, res, next) => {
+  res.status(404).json({
+    status: "fail",
+    message: `Cant find ${req.originalUrl} on this server!`,
+  });
+  next();
+});
+
 module.exports = app;
