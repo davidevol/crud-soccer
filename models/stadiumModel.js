@@ -82,6 +82,11 @@ const stadiumSchema = new mongoose.Schema(
   }
 );
 
+stadiumSchema.virtual("durationWeeks").get(function () {
+  const weeks = (this.duration / 7).toPrecision(2);
+  return weeks
+});
+
 const Stadium = mongoose.model("StadiumDB", stadiumSchema);
 
 module.exports = Stadium;
