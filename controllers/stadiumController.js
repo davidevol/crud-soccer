@@ -9,7 +9,7 @@ exports.aliasTopCheap = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.getAllStadiums = catchAsync(async (req, res) => {
+exports.getAllStadiums = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Stadium.find(), req.query)
     .filter()
     .sort()
@@ -26,7 +26,7 @@ exports.getAllStadiums = catchAsync(async (req, res) => {
   });
 });
 
-exports.getStadium = catchAsync(async (req, res) => {
+exports.getStadium = catchAsync(async (req, res, next) => {
   const stadium = await Stadium.findById(req.params.id);
   res.status(200).json({
     status: "success",
@@ -36,7 +36,7 @@ exports.getStadium = catchAsync(async (req, res) => {
   });
 });
 
-exports.addStadium = catchAsync(async (req, res) => {
+exports.addStadium = catchAsync(async (req, res, next) => {
   const newStadium = await Stadium.create(req.body);
 
   res.status(201).json({
@@ -47,13 +47,13 @@ exports.addStadium = catchAsync(async (req, res) => {
   });
 });
 
-exports.deleteStadium = catchAsync(async (req, res) => {
+exports.deleteStadium = catchAsync(async (req, res, next) => {
   await Stadium.findByIdAndDelete(req.params.id);
 
   res.status(204).end();
 });
 
-exports.changeStadium = catchAsync(async (req, res) => {
+exports.changeStadium = catchAsync(async (req, res, next) => {
   const stadium = await Stadium.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -67,7 +67,7 @@ exports.changeStadium = catchAsync(async (req, res) => {
   });
 });
 
-exports.getStadiumStats = catchAsync(async (req, res) => {
+exports.getStadiumStats = catchAsync(async (req, res, next) => {
   const stats = await Stadium.aggregate([
     {
       $match: { ratingsAverage: { $gte: 4.5 } },
@@ -96,7 +96,7 @@ exports.getStadiumStats = catchAsync(async (req, res) => {
   });
 });
 
-exports.getMonthlyPlan = catchAsync(async (req, res) => {
+exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year * 1; // 2021
 
   const plan = await Stadium.aggregate([
