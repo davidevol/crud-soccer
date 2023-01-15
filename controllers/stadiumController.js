@@ -9,7 +9,7 @@ exports.aliasTopCheap = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.getAllStadiums = catchAsync(async (req, res, next) => {
+exports.getAllStadiums = catchAsync(async (req, res) => {
   const features = new APIFeatures(Stadium.find(), req.query)
     .filter()
     .sort()
@@ -18,7 +18,7 @@ exports.getAllStadiums = catchAsync(async (req, res, next) => {
   const stadiums = await features.query;
 
   res.status(200).json({
-    status: "sucess",
+    status: "success",
     length: stadiums.length,
     data: {
       stadiums,
@@ -26,48 +26,48 @@ exports.getAllStadiums = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getStadium = catchAsync(async (req, res, next) => {
+exports.getStadium = catchAsync(async (req, res) => {
   const stadium = await Stadium.findById(req.params.id);
   res.status(200).json({
-    status: "sucess",
+    status: "success",
     data: {
       stadium,
     },
   });
 });
 
-exports.addStadium = catchAsync(async (req, res, next) => {
+exports.addStadium = catchAsync(async (req, res) => {
   const newStadium = await Stadium.create(req.body);
 
   res.status(201).json({
-    status: "sucess",
+    status: "success",
     data: {
       stadium: newStadium,
     },
   });
 });
 
-exports.deleteStadium = catchAsync(async (req, res, next) => {
+exports.deleteStadium = catchAsync(async (req, res) => {
   await Stadium.findByIdAndDelete(req.params.id);
 
   res.status(204).end();
 });
 
-exports.changeStadium = catchAsync(async (req, res, next) => {
+exports.changeStadium = catchAsync(async (req, res) => {
   const stadium = await Stadium.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
 
   res.status(200).json({
-    status: "sucess",
+    status: "success",
     data: {
       stadium,
     },
   });
 });
 
-exports.getStadiumStats = catchAsync(async (req, res, next) => {
+exports.getStadiumStats = catchAsync(async (req, res) => {
   const stats = await Stadium.aggregate([
     {
       $match: { ratingsAverage: { $gte: 4.5 } },
@@ -96,7 +96,7 @@ exports.getStadiumStats = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
+exports.getMonthlyPlan = catchAsync(async (req, res) => {
   const year = req.params.year * 1; // 2021
 
   const plan = await Stadium.aggregate([
