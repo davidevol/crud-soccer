@@ -1,5 +1,6 @@
 const express = require("express");
 const stadiumController = require("./../controllers/stadiumController");
+const authController = require("./../controllers/authController")
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.route("/monthly-plan/:year").get(stadiumController.getMonthlyPlan);
 
 router
   .route("/")
-  .get(stadiumController.getAllStadiums)
+  .get(authController.protect, stadiumController.getAllStadiums)
   .post(stadiumController.addStadium);
 
 router
