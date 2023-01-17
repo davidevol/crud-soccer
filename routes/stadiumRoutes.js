@@ -19,7 +19,7 @@ router
 router
   .route("/:id")
   .get(stadiumController.getStadium)
-  .delete(stadiumController.deleteStadium)
+  .delete(authController.protect, authController.restrictTo("admin", "lead-guide"), stadiumController.deleteStadium)
   .patch(stadiumController.changeStadium);
 
 module.exports = router;
