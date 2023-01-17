@@ -9,18 +9,19 @@ const userRouter = require("./routes/userRoutes");
 
 const app = express();
 
-const requestLimiter = rateLimit({
-  max: 100,
-  message: "there are too many requests!",
-});
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use(express.json());
+const requestLimiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: "there are too many requests!",
+});
 app.use("/api", requestLimiter);
 
+app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
 app.use("/api/v1/stadiums", stadiumRouter);
