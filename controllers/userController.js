@@ -1,6 +1,8 @@
 const User = require("./../models/userModel");
 const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
+const factory = require("./../controllers/handlerFactory");
+
 
 const filterObject = (object, ...allowedFields) => {
   const newObject = {};
@@ -80,9 +82,7 @@ exports.updateUser = (req, res) => {
     message: "This route is not yet defined!",
   });
 };
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
-  });
-};
+
+// only admin is allowed to delete users
+exports.deleteUser = factory.deleteOne(User);
+

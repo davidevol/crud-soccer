@@ -1,6 +1,7 @@
 const Stadium = require("./../models/stadiumModel");
 const APIFeatures = require("./../utils/apiFeatures");
 const catchAsync = require("./../utils/catchAsync");
+const factory = require("./../controllers/handlerFactory");
 
 exports.aliasTopCheap = catchAsync(async (req, res, next) => {
   req.query.limit = "5";
@@ -28,7 +29,7 @@ exports.getAllStadiums = catchAsync(async (req, res, next) => {
 
 exports.getStadium = catchAsync(async (req, res, next) => {
   const stadium = await Stadium.findById(req.params.id).params("reviews");
-  
+
   res.status(200).json({
     status: "success",
     data: {
@@ -48,11 +49,7 @@ exports.addStadium = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteStadium = catchAsync(async (req, res, next) => {
-  await Stadium.findByIdAndDelete(req.params.id);
-
-  res.status(204).end();
-});
+exports.deleteStadium = factory.deleteOne(Stadium)
 
 exports.changeStadium = catchAsync(async (req, res, next) => {
   const stadium = await Stadium.findByIdAndUpdate(req.params.id, req.body, {
