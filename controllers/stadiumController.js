@@ -38,16 +38,7 @@ exports.getStadium = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.addStadium = catchAsync(async (req, res, next) => {
-  const newStadium = await Stadium.create(req.body);
-
-  res.status(201).json({
-    status: "success",
-    data: {
-      stadium: newStadium,
-    },
-  });
-});
+exports.createStadium = factory.createOne(Stadium)
 
 exports.deleteStadium = factory.deleteOne(Stadium);
 

@@ -17,7 +17,7 @@ router.route("/monthly-plan/:year").get(stadiumController.getMonthlyPlan);
 router
   .route("/")
   .get(authController.protect, stadiumController.getAllStadiums)
-  .post(stadiumController.addStadium);
+  .post(stadiumController.createStadium);
 
 router
   .route("/:id")
