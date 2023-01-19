@@ -1,8 +1,11 @@
 const express = require("express");
 const stadiumController = require("./../controllers/stadiumController");
-const authController = require("./../controllers/authController")
+const authController = require("./../controllers/authController");
+const reviewRouter = require("./../routes/reviewRoutes");
 
 const router = express.Router();
+
+router.get("/:stadiumId/reviews", reviewRouter);
 
 router
   .route("/top-5-cheap")
@@ -19,7 +22,11 @@ router
 router
   .route("/:id")
   .get(stadiumController.getStadium)
-  .delete(authController.protect, authController.restrictTo("admin", "lead-guide"), stadiumController.deleteStadium)
+  .delete(
+    authController.protect,
+    authController.restrictTo("admin", "lead-guide"),
+    stadiumController.deleteStadium
+  )
   .patch(stadiumController.changeStadium);
 
 module.exports = router;
