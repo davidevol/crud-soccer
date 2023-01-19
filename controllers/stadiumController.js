@@ -49,21 +49,9 @@ exports.addStadium = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteStadium = factory.deleteOne(Stadium)
+exports.deleteStadium = factory.deleteOne(Stadium);
 
-exports.changeStadium = catchAsync(async (req, res, next) => {
-  const stadium = await Stadium.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      stadium,
-    },
-  });
-});
+exports.updateStadium = factory.updateOne(Stadium);
 
 exports.getStadiumStats = catchAsync(async (req, res, next) => {
   const stats = await Stadium.aggregate([

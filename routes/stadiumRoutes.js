@@ -27,6 +27,6 @@ router
     authController.restrictTo("admin", "lead-guide"),
     stadiumController.deleteStadium
   )
-  .patch(stadiumController.changeStadium);
+  .patch(stadiumController.updateStadium);
 
 module.exports = router;
