@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
-const User = require("../models/usermodel");
 // const validator = require("validator");
 
 const stadiumSchema = new mongoose.Schema(
@@ -101,7 +100,12 @@ const stadiumSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: Array,
+    guides: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+      }
+    ]
   },
   {
     toJSON: { virtuals: true },
@@ -116,12 +120,6 @@ stadiumSchema.virtual("durationWeeks").get(function () {
 
 stadiumSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
-  next();
-});
-
-stadiumSchema.pre("save", async function (next) {
-  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-  this.guides = await Promise.all(guidesPromises);
   next();
 });
 
