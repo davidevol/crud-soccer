@@ -27,7 +27,8 @@ exports.getAllStadiums = catchAsync(async (req, res, next) => {
 });
 
 exports.getStadium = catchAsync(async (req, res, next) => {
-  const stadium = await Stadium.findById(req.params.id);
+  const stadium = await Stadium.findById(req.params.id).params("reviews");
+  
   res.status(200).json({
     status: "success",
     data: {

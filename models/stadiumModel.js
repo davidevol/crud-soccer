@@ -113,6 +113,12 @@ const stadiumSchema = new mongoose.Schema(
   }
 );
 
+stadiumSchema.virtual("reviews", {
+  ref: "Review",
+    foreignField: "stadium",
+    localField: "_id",
+})
+
 stadiumSchema.virtual("durationWeeks").get(function () {
   const weeks = (this.duration / 7).toPrecision(2);
   return weeks;
