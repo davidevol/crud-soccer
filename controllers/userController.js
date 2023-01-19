@@ -3,7 +3,6 @@ const catchAsync = require("./../utils/catchAsync");
 const AppError = require("./../utils/appError");
 const factory = require("./../controllers/handlerFactory");
 
-
 const filterObject = (object, ...allowedFields) => {
   const newObject = {};
   Object.keys(object).forEach((el) => {
@@ -11,21 +10,6 @@ const filterObject = (object, ...allowedFields) => {
   });
   return newObject;
 };
-
-Object
-
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
-
-  // SEND RESPONSE
-  res.status(200).json({
-    status: "success",
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1) Create error if user POSTs password data
@@ -64,22 +48,19 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined!",
-  });
-};
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: "error",
-    message: "This route is not yet defined!",
+    message: "This route is not yet defined! Use /signup instead!",
   });
 };
 
+exports.getUser = factory.getOne(User);
+
+exports.getAllUsers = factory.getAll(User);
+
 // dont update passwords with this
-exports.updateUser = factory.deleteOne(User)
+exports.updateUser = factory.deleteOne(User);
 
 // only admin is allowed to delete users
 exports.deleteUser = factory.deleteOne(User);
-

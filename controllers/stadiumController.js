@@ -1,5 +1,4 @@
 const Stadium = require("./../models/stadiumModel");
-const APIFeatures = require("./../utils/apiFeatures");
 const catchAsync = require("./../utils/catchAsync");
 const factory = require("./../controllers/handlerFactory");
 
@@ -10,35 +9,11 @@ exports.aliasTopCheap = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.getAllStadiums = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Stadium.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const stadiums = await features.query;
+exports.getAllStadiums = factory.getAll(Stadium);
 
-  res.status(200).json({
-    status: "success",
-    length: stadiums.length,
-    data: {
-      stadiums,
-    },
-  });
-});
+exports.getStadium = factory.getOne(Stadium, { path: "reviews" });
 
-exports.getStadium = catchAsync(async (req, res, next) => {
-  const stadium = await Stadium.findById(req.params.id).params("reviews");
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      stadium,
-    },
-  });
-});
-
-exports.createStadium = factory.createOne(Stadium)
+exports.createStadium = factory.createOne(Stadium);
 
 exports.deleteStadium = factory.deleteOne(Stadium);
 
