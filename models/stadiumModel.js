@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
-const validator = require("validator");
+// const validator = require("validator");
 
 const stadiumSchema = new mongoose.Schema(
   {
@@ -11,10 +11,10 @@ const stadiumSchema = new mongoose.Schema(
       trim: true,
       maxlength: [40, "A tour name must have less or equal then 40 characters"],
       minlength: [10, "A tour name must have more or equal then 10 characters"],
-      validate: [
-        validator.isAlpha,
-        "Stadium name must only contain characters",
-      ],
+      // validate: [
+      //   validator.isAlpha,
+      //   "Stadium name must only contain characters",
+      // ],
     },
     slug: String,
     duration: {
@@ -80,6 +80,26 @@ const stadiumSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      //GeoJSON
+      type: {
+        type: String,
+        default: "Point",
+        enum: ["Point"],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: { type: String, default: "Point", enum: ["Point"] },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -92,7 +112,7 @@ stadiumSchema.virtual("durationWeeks").get(function () {
   return weeks;
 });
 
-stadiumSchema.pre('save', function(next) {
+stadiumSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
