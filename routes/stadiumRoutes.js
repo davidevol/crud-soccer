@@ -12,6 +12,15 @@ router
   .get(stadiumController.aliasTopStadiums, stadiumController.getAllStadiums);
 
 router.route("/stadium-stats").get(stadiumController.getStadiumStats);
+
+router
+  .route("/stadium-within/:distance/center/:latlng/unit/:unit")
+  .get(stadiumController.getStadiumsWithin);
+
+router
+  .route("/distances/:latlng/unit/:unit")
+  .get(stadiumController.getDistances);
+
 router
   .route("/monthly-plan/:year")
   .get(
