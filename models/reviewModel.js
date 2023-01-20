@@ -44,7 +44,7 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
-reviewSchema.statics.calcAverageRatings = async function (stadiumId) {
+reviewSchema.statics.calculateAverageRatings = async function (stadiumId) {
   const stats = await this.aggregate([
     {
       $match: { stadium: stadiumId },
@@ -74,7 +74,7 @@ reviewSchema.statics.calcAverageRatings = async function (stadiumId) {
 
 reviewSchema.post("save", function () {
   // this points to current review
-  this.constructor.calcAverageRatings(this.stadium);
+  this.constructor.calculateAverageRatings(this.stadium);
 });
 
 
@@ -85,7 +85,7 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
 
 reviewSchema.post(/^findOneAnd/, async function () {
   // await this.findOne(); does NOT work here, query has already executed
-  await this.r.constructor.calcAverageRatings(this.r.stadium);
+  await this.r.constructor.calculateAverageRatings(this.r.stadium);
 });
 
 const Review = mongoose.model("Review", reviewSchema);
