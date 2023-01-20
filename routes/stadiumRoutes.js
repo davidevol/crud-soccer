@@ -12,12 +12,20 @@ router
   .get(stadiumController.aliasTopCheap, stadiumController.getAllStadiums);
 
 router.route("/stadium-stats").get(stadiumController.getStadiumStats);
-router.route("/monthly-plan/:year").get(stadiumController.getMonthlyPlan);
+router.route("/monthly-plan/:year").get(
+  authController.protect,
+  authController.restrictTo("admin", "lead-guide"),
+  stadiumController.getMonthlyPlan
+)
 
 router
   .route("/")
-  .get(authController.protect, stadiumController.getAllStadiums)
-  .post(stadiumController.createStadium);
+  .get(stadiumController.getAllStadiums)
+  .post(
+    authController.protect,
+    authController.restrictTo("admin", "lead-guide"),
+    stadiumController.createStadium
+  );
 
 router
   .route("/:id")
