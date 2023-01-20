@@ -16,7 +16,7 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     //if expires dont work use expiresIn
-    //expiresIn: process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 
+    //expiresIn: process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
@@ -57,10 +57,11 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!email || !password) {
     return next(new AppError("Please provide email and password!", 400));
   }
+  
   // 2) Check if user exists && password is correct
   const user = await User.findOne({ email }).select("+password");
 
-  if (!user || !(await user.correctPassword(password, user.password))) {
+  if (!user || !(await user.correctPassword(password, user.password))) { // !
     return next(new AppError("Incorrect email or password", 401));
   }
   createSendToken(user, 200, res);
