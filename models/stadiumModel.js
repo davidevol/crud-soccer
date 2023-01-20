@@ -1,33 +1,37 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
-// const validator = require("validator");
+// const User = require('./userModel');
+// const validator = require('validator');
 
 const stadiumSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "A tour must have a name"],
+      required: [true, "A stadium must have a name"],
       unique: true,
       trim: true,
-      maxlength: [40, "A tour name must have less or equal then 40 characters"],
-      minlength: [10, "A tour name must have more or equal then 10 characters"],
-      // validate: [
-      //   validator.isAlpha,
-      //   "Stadium name must only contain characters",
-      // ],
+      maxlength: [
+        40,
+        "A stadium name must have less or equal then 40 characters",
+      ],
+      minlength: [
+        10,
+        "A stadium name must have more or equal then 10 characters",
+      ],
+      // validate: [validator.isAlpha, 'Stadium name must only contain characters']
     },
     slug: String,
     duration: {
       type: Number,
-      required: [true, "A tour must have a duration"],
+      required: [true, "A stadium must have a duration"],
     },
     maxGroupSize: {
       type: Number,
-      required: [true, "A tour must have a group size"],
+      required: [true, "A stadium must have a group size"],
     },
     difficulty: {
       type: String,
-      required: [true, "A tour must have a difficulty"],
+      required: [true, "A stadium must have a difficulty"],
       enum: {
         values: ["easy", "medium", "difficult"],
         message: "Difficulty is either: easy, medium, difficult",
@@ -38,6 +42,7 @@ const stadiumSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, "Rating must be above 1.0"],
       max: [5, "Rating must be below 5.0"],
+      set: (val) => Math.round(val * 10) / 10, // 4.666666, 46.6666, 47, 4.7
     },
     ratingsQuantity: {
       type: Number,
@@ -45,12 +50,13 @@ const stadiumSchema = new mongoose.Schema(
     },
     price: {
       type: Number,
-      required: [true, "A tour must have a price"],
+      required: [true, "A stadium must have a price"],
     },
     priceDiscount: {
       type: Number,
       validate: {
         validator: function (val) {
+          // this only points to current document on NEW document creation
           return val < this.price;
         },
         message: "Discount price ({VALUE}) should be below regular price",
@@ -59,7 +65,7 @@ const stadiumSchema = new mongoose.Schema(
     summary: {
       type: String,
       trim: true,
-      required: [true, "A tour must have a description"],
+      required: [true, "A stadium must have a description"],
     },
     description: {
       type: String,
@@ -67,7 +73,7 @@ const stadiumSchema = new mongoose.Schema(
     },
     imageCover: {
       type: String,
-      required: [true, "A tour must have a cover image"],
+      required: [true, "A stadium must have a cover image"],
     },
     images: [String],
     createdAt: {
@@ -81,7 +87,7 @@ const stadiumSchema = new mongoose.Schema(
       default: false,
     },
     startLocation: {
-      //GeoJSON
+      // GeoJSON
       type: {
         type: String,
         default: "Point",
@@ -93,7 +99,11 @@ const stadiumSchema = new mongoose.Schema(
     },
     locations: [
       {
-        type: { type: String, default: "Point", enum: ["Point"] },
+        type: {
+          type: String,
+          default: "Point",
+          enum: ["Point"],
+        },
         coordinates: [Number],
         address: String,
         description: String,
@@ -102,10 +112,10 @@ const stadiumSchema = new mongoose.Schema(
     ],
     guides: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Users",
-      }
-    ]
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -113,26 +123,38 @@ const stadiumSchema = new mongoose.Schema(
   }
 );
 
-stadiumSchema.virtual("reviews", {
-  ref: "Review",
-    foreignField: "stadium",
-    localField: "_id",
-})
-
 stadiumSchema.virtual("durationWeeks").get(function () {
-  const weeks = (this.duration / 7).toPrecision(2);
-  return weeks;
+  return this.duration / 7;
 });
 
+// Virtual populate
+stadiumSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "stadium",
+  localField: "_id",
+});
+
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
 stadiumSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
 
+// QUERY MIDDLEWARE
+// stadiumSchema.pre('find', function(next) {
 stadiumSchema.pre(/^find/, function (next) {
   this.find({ secretStadium: { $ne: true } });
 
   this.start = Date.now();
+  next();
+});
+
+stadiumSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "guides",
+    select: "-__v -passwordChangedAt",
+  });
+
   next();
 });
 
@@ -141,14 +163,6 @@ stadiumSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-// AGGREGATION MIDDLEWARE
-stadiumSchema.pre("aggregate", function (next) {
-  this.pipeline().unshift({ $match: { secretStadium: { $ne: true } } });
-
-  console.log(this.pipeline());
-  next();
-});
-
-const Stadium = mongoose.model("StadiumDB", stadiumSchema);
+const Stadium = mongoose.model("Stadium", stadiumSchema);
 
 module.exports = Stadium;

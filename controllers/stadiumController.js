@@ -1,23 +1,20 @@
 const Stadium = require("./../models/stadiumModel");
 const catchAsync = require("./../utils/catchAsync");
-const factory = require("./../controllers/handlerFactory");
+const factory = require("./handlerFactory");
+const AppError = require("./../utils/appError");
 
-exports.aliasTopCheap = catchAsync(async (req, res, next) => {
+exports.aliasTopStadiums = (req, res, next) => {
   req.query.limit = "5";
   req.query.sort = "-ratingsAverage,price";
   req.query.fields = "name,price,ratingsAverage,summary,difficulty";
   next();
-});
+};
 
 exports.getAllStadiums = factory.getAll(Stadium);
-
 exports.getStadium = factory.getOne(Stadium, { path: "reviews" });
-
 exports.createStadium = factory.createOne(Stadium);
-
-exports.deleteStadium = factory.deleteOne(Stadium);
-
 exports.updateStadium = factory.updateOne(Stadium);
+exports.deleteStadium = factory.deleteOne(Stadium);
 
 exports.getStadiumStats = catchAsync(async (req, res, next) => {
   const stats = await Stadium.aggregate([
@@ -27,7 +24,7 @@ exports.getStadiumStats = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: { $toUpper: "$difficulty" },
-        numTours: { $sum: 1 },
+        numStadiums: { $sum: 1 },
         numRatings: { $sum: "$ratingsQuantity" },
         avgRating: { $avg: "$ratingsAverage" },
         avgPrice: { $avg: "$price" },
@@ -38,6 +35,9 @@ exports.getStadiumStats = catchAsync(async (req, res, next) => {
     {
       $sort: { avgPrice: 1 },
     },
+    // {
+    //   $match: { _id: { $ne: 'EASY' } }
+    // }
   ]);
 
   res.status(200).json({
@@ -66,8 +66,8 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: { $month: "$startDates" },
-        numTourStarts: { $sum: 1 },
-        stadium: { $push: "$name" },
+        numStadiumStarts: { $sum: 1 },
+        stadiums: { $push: "$name" },
       },
     },
     {
@@ -79,7 +79,7 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
       },
     },
     {
-      $sort: { numTourStarts: -1 },
+      $sort: { numStadiumStarts: -1 },
     },
     {
       $limit: 12,

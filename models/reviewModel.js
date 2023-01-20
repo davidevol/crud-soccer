@@ -33,12 +33,59 @@ const reviewSchema = new mongoose.Schema(
   }
 );
 
+reviewSchema.index({ stadium: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function (next) {
+
   this.populate({
-    path: "stadium",
-    select: "name",
+    path: "user",
+    select: "name photo",
   });
   next();
+});
+
+reviewSchema.statics.calcAverageRatings = async function (stadiumId) {
+  const stats = await this.aggregate([
+    {
+      $match: { stadium: stadiumId },
+    },
+    {
+      $group: {
+        _id: "$stadium",
+        nRating: { $sum: 1 },
+        avgRating: { $avg: "$rating" },
+      },
+    },
+  ]);
+  // console.log(stats);
+
+  if (stats.length > 0) {
+    await Stadium.findByIdAndUpdate(stadiumId, {
+      ratingsQuantity: stats[0].nRating,
+      ratingsAverage: stats[0].avgRating,
+    });
+  } else {
+    await Stadium.findByIdAndUpdate(stadiumId, {
+      ratingsQuantity: 0,
+      ratingsAverage: 4.5,
+    });
+  }
+};
+
+reviewSchema.post("save", function () {
+  // this points to current review
+  this.constructor.calcAverageRatings(this.stadium);
+});
+
+
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  this.r = await this.findOne();
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  // await this.findOne(); does NOT work here, query has already executed
+  await this.r.constructor.calcAverageRatings(this.r.stadium);
 });
 
 const Review = mongoose.model("Review", reviewSchema);

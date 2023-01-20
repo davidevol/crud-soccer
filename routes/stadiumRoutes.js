@@ -5,18 +5,20 @@ const reviewRouter = require("./../routes/reviewRoutes");
 
 const router = express.Router();
 
-router.get("/:stadiumId/reviews", reviewRouter);
+router.use("/:stadiumId/reviews", reviewRouter);
 
 router
   .route("/top-5-cheap")
-  .get(stadiumController.aliasTopCheap, stadiumController.getAllStadiums);
+  .get(stadiumController.aliasTopStadiums, stadiumController.getAllStadiums);
 
 router.route("/stadium-stats").get(stadiumController.getStadiumStats);
-router.route("/monthly-plan/:year").get(
-  authController.protect,
-  authController.restrictTo("admin", "lead-guide"),
-  stadiumController.getMonthlyPlan
-)
+router
+  .route("/monthly-plan/:year")
+  .get(
+    authController.protect,
+    authController.restrictTo("admin", "lead-guide", "guide"),
+    stadiumController.getMonthlyPlan
+  );
 
 router
   .route("/")
@@ -30,11 +32,15 @@ router
 router
   .route("/:id")
   .get(stadiumController.getStadium)
+  .patch(
+    authController.protect,
+    authController.restrictTo("admin", "lead-guide"),
+    stadiumController.updateStadium
+  )
   .delete(
     authController.protect,
     authController.restrictTo("admin", "lead-guide"),
     stadiumController.deleteStadium
-  )
-  .patch(stadiumController.updateStadium);
+  );
 
 module.exports = router;
