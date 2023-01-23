@@ -40,7 +40,8 @@ app.use("/api", requestLimiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: "10kb" }));
-app.use(cookieParser())
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -63,7 +64,6 @@ app.use(
 );
 
 // 3) ROUTES
-
 app.use("/", viewRouter);
 app.use("/api/v1/stadiums", stadiumRouter);
 app.use("/api/v1/users", userRouter);
