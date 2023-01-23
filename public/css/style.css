@@ -157,12 +157,12 @@ body {
     left top,
     right bottom,
     from(rgba(187, 102, 161, 0.85)),
-    to(rgba(40, 180, 135, 0.85))
+    to(rgba(159, 39, 135, 0.85))
   );
   background-image: linear-gradient(
     to bottom right,
     rgba(187, 102, 161, 0.85),
-    rgba(40, 180, 135, 0.85)
+    rgba(159, 39, 135, 0.85)
   );
 }
 
@@ -871,18 +871,18 @@ body {
     flex-direction: column;
   }
 }
-.nav--tours {
+.nav--stadiums {
   -webkit-box-flex: 0;
   -ms-flex: 0 1 40%;
   flex: 0 1 40%;
 }
 @media only screen and (max-width: 62.5em) {
-  .nav--tours {
+  .nav--stadiums {
     margin-bottom: 1.5rem;
   }
 }
 @media only screen and (max-width: 37.5em) {
-  .nav--tours {
+  .nav--stadiums {
     margin-bottom: 0;
   }
 }
