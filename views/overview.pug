@@ -1,0 +1,45 @@
+extends base
+
+block content
+  main.main
+    .card-container
+
+      each stadium in stadiums
+        .card
+          .card__header
+            .card__picture
+              .card__picture-overlay &nbsp;
+              img.card__picture-img(src=`/img/stadiums/${stadium.imageCover}`, alt=`${stadium.name}`)
+            h3.heading-tertirary
+              span= stadium.name
+
+          .card__details
+            h4.card__sub-heading= `${stadium.difficulty} ${stadium.duration}-day stadium`
+            p.card__text= stadium.summary
+            .card__data
+              svg.card__icon
+                use(xlink:href='/img/icons.svg#icon-map-pin')
+              span= stadium.startLocation.description
+            .card__data
+              svg.card__icon
+                use(xlink:href='/img/icons.svg#icon-calendar')
+              span= stadium.startDates[0].toLocaleString('en-us', {month: 'long', year: 'numeric'})
+            .card__data
+              svg.card__icon
+                use(xlink:href='/img/icons.svg#icon-flag')
+              span= `${stadium.locations.length} stops`
+            .card__data
+              svg.card__icon
+                use(xlink:href='/img/icons.svg#icon-user')
+              span= `${stadium.maxGroupSize} people`
+
+          .card__footer
+            p
+              span.card__footer-value= `$${stadium.price}`
+              | 
+              span.card__footer-text per person
+            p.card__ratings
+              span.card__footer-value= stadium.ratingsAverage
+              | 
+              span.card__footer-text= `rating (${stadium.ratingsQuantity})`
+            a.btn.btn--pink.btn--small(href=`/stadium/${stadium.slug}`) Details
