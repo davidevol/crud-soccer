@@ -32,7 +32,7 @@ body {
   font-weight: 300;
   font-family: "Lato", sans-serif;
   color: #777;
-  background-color: #923e7b;
+  background-color: #ffc9f0;
   padding: 3rem;
   min-height: 100vh;
   display: -webkit-box;
@@ -124,6 +124,7 @@ body {
   );
   background-image: linear-gradient(to right, #d56fae, #6e28b4);
   background-clip: text;
+  -webkit-background-clip: text;
   color: transparent;
   letter-spacing: 0.1rem;
   line-height: 1.3;
