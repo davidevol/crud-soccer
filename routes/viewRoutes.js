@@ -14,6 +14,13 @@ router.get("/login", authController.isLoggedIn, viewsController.getLoginForm);
 
 router.get("/me", authController.protect, viewsController.getAccount);
 
+router.get(
+  "/my-stadiums",
+  bookingController.createBookingCheckout,
+  authController.protect,
+  viewsController.getMyStadiums
+);
+
 router.post(
   "/submit-user-data",
   authController.protect,

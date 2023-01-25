@@ -46,6 +46,20 @@ exports.getAccount = (req, res) => {
   });
 };
 
+exports.getMyStadiums = catchAsync(async (req, res, next) => {
+  // 1) Find all bookings
+  const bookings = await Booking.find({ user: req.user.id });
+
+  // 2) Find stadiums with the returned IDs
+  const stadiumIDs = bookings.map((el) => el.stadium);
+  const stadiums = await Stadium.find({ _id: { $in: stadiumIDs } });
+
+  res.status(200).render("overview", {
+    title: "My Stadiums",
+    stadiums,
+  });
+});
+
 exports.updateUserData = catchAsync(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
     req.user.id,
