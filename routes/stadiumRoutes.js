@@ -44,6 +44,8 @@ router
   .patch(
     authController.protect,
     authController.restrictTo("admin", "lead-guide"),
+    stadiumController.uploadStadiumImages,
+    stadiumController.resizeStadiumImages,
     stadiumController.updateStadium
   )
   .delete(
