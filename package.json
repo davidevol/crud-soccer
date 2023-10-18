@@ -41,6 +41,6 @@
     "node": ">=10.0.0"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.12.3"
+    "parcel-bundler": "^1.12.5"
   }
 }
